@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.google.protobuf' version '0.8.7'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def grpcVersion = '1.17.1'
+def protobufVersion = '3.6.1'
+def protocVersion = '3.6.1'
+def undertowVersion = '2.0.16.Final'
+def opencensusVersion = '0.18.0'
+
+dependencies {
+    implementation 'com.google.guava:guava:26.0-jre'
+    implementation "io.undertow:undertow-core:${undertowVersion}"
+
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    compileOnly "javax.annotation:javax.annotation-api:1.2"
+
+    implementation "io.opencensus:opencensus-api:${opencensusVersion}"
+    implementation "io.opencensus:opencensus-contrib-grpc-metrics:${opencensusVersion}"
+    implementation "io.opencensus:opencensus-exporter-trace-jaeger:${opencensusVersion}"
+    implementation "io.opencensus:opencensus-impl:${opencensusVersion}"
+
+
+    runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+
+    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+
+    testImplementation 'junit:junit:4.12'
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+    }
+    generateProtoTasks {
+        all()*.plugins { grpc {} }
+    }
+}
+
+// Inform IDEs like IntelliJ IDEA, Eclipse or NetBeans about the generated code.
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
+application {
+    mainClassName = 'de.unia.gvs.undertow.App'
+}
