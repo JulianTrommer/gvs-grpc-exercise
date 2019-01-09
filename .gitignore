@@ -4,6 +4,12 @@
 # Build output directories
 build
 out
+bin
 
 # IntelliJ project directory
 .idea
+
+# Gitpod
+.theia
+.settings
+.classpath
