@@ -13,3 +13,6 @@ bin
 .theia
 .settings
 .classpath
+
+# Generated source code
+src-gen/**/*.java

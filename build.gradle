@@ -35,6 +35,8 @@ dependencies {
 
 
 protobuf {
+    generatedFilesBaseDir = "$projectDir/src-gen"
+
     protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
     plugins {
         grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
@@ -48,8 +50,8 @@ protobuf {
 sourceSets {
     main {
         java {
-            srcDirs 'build/generated/source/proto/main/grpc'
-            srcDirs 'build/generated/source/proto/main/java'
+            srcDirs 'src-gen/main/grpc'
+            srcDirs 'src-gen/main/java'
         }
     }
 }
