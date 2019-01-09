@@ -1,12 +1,20 @@
 package de.unia.gvs.grpc;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Random;
+
 import com.diffplug.common.base.Errors;
 import com.google.common.collect.Streams;
 import com.google.protobuf.util.JsonFormat;
+
+import org.jboss.logging.Logger;
+
 import de.unia.gvs.grpc.client.PositionLogClient;
 import de.unia.gvs.grpc.server.PositionLogServer;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.predicate.Predicates;
 import io.undertow.server.RoutingHandler;
@@ -17,11 +25,6 @@ import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.util.Headers;
-import org.jboss.logging.Logger;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Random;
 
 import static java.util.stream.Collectors.joining;
 
@@ -70,6 +73,7 @@ public class App {
 
     private static Undertow initUndertow(PositionLogClient client) {
         final RoutingHandler routingHandler = new RoutingHandler()
+                .get("/", Handlers.redirect("/map.html"))
                 .get("/points/{userId}", exchange -> {
                     final int userId = Integer.parseInt(exchange.getQueryParameters().get("userId").getFirst());
 
