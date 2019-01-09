@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "de.unia.gvs.grpc";
+option java_outer_classname = "PositionLogProto";
+option objc_class_prefix = "PLOG";
+
+package de.unia.gvs.gprc;
+
+enum Source {
+    GPS = 0;
+    EKF = 1;
+    TRIANGULATION = 2;
+}
+
+message Coordinate {
+    double latitude = 1;
+    double longitude = 2;
+    double altitude = 3;
+    Source source = 4;
+}
+
+message PointsRequest {
+    uint32 user_id = 1;
+}
+
+message LogPositionRequest {
+    uint32 user_id = 1;
+    repeated Coordinate points = 2;
+}
+
+message LogPositionReply {}
+
+message GetUsersRequest { }
+message GetUsersReply{
+    repeated uint32 users_ids = 1;
+}
+
+service PositionLogService {
+    rpc GetUsers (GetUsersRequest) returns (GetUsersReply) { }
+    rpc LogPosition (LogPositionRequest) returns (LogPositionReply) { }
+    rpc GetPoints (PointsRequest) returns (stream Coordinate) { }
+}
