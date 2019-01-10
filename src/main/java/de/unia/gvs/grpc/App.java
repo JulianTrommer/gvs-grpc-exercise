@@ -1,15 +1,8 @@
 package de.unia.gvs.grpc;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Random;
-
 import com.diffplug.common.base.Errors;
 import com.google.common.collect.Streams;
 import com.google.protobuf.util.JsonFormat;
-
-import org.jboss.logging.Logger;
-
 import de.unia.gvs.grpc.client.PositionLogClient;
 import de.unia.gvs.grpc.server.PositionLogServer;
 import io.grpc.ManagedChannel;
@@ -21,10 +14,16 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.PredicateHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.JBossLoggingAccessLogReceiver;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.util.Headers;
+import org.jboss.logging.Logger;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.Random;
 
 import static java.util.stream.Collectors.joining;
 
@@ -76,7 +75,6 @@ public class App {
                 .get("/", Handlers.redirect("/map.html"))
                 .get("/points/{userId}", exchange -> {
                     final int userId = Integer.parseInt(exchange.getQueryParameters().get("userId").getFirst());
-
                     final Iterator<Coordinate> data = client.getPoints(userId);
                     final String json = Streams.stream(data)
                             .map(Errors.rethrow().wrap(JsonFormat.printer()::print))
@@ -85,8 +83,16 @@ public class App {
                     exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/json");
                     exchange.getResponseSender().send("[" + json + "]");
                 })
+                .get("/trackLength/{userId}", exchange -> {
+                    final int userId = Integer.parseInt(exchange.getQueryParameters().get("userId").getFirst());
+                    final LengthReply data = client.getTrackLength(userId);
+                    final String json = JsonFormat.printer().print(data);
+
+                    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/json");
+                    exchange.getResponseSender().send(json);
+                })
                 .get("/users", exchange -> {
-                    final String json = client.getUsers()
+                    final String json = client.listUsers()
                             .stream()
                             .map(Object::toString)
                             .collect(joining(",\n"));

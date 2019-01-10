@@ -20,11 +20,19 @@ public class PositionLogClient {
         return stub.getPoints(request);
     }
 
-    public List<Integer> getUsers() {
-        return stub.getUsers(GetUsersRequest.getDefaultInstance()).getUsersIdsList();
+    public List<Integer> listUsers() {
+        return stub.listUsers(ListUsersRequest.getDefaultInstance()).getUsersIdsList();
+    }
+
+    public void removeUser(int userId) {
+        stub.deleteUser(DeleteUserRequest.newBuilder().setUserId(userId).build());
     }
 
     public void logPoints(LogPositionRequest request) {
         stub.logPosition(request);
+    }
+
+    public LengthReply getTrackLength(int userId) {
+        return stub.getTrackLength(LengthRequest.newBuilder().setUserId(userId).build());
     }
 }

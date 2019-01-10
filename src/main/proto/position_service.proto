@@ -7,6 +7,9 @@ option objc_class_prefix = "PLOG";
 
 package de.unia.gvs.gprc;
 
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
 enum Source {
     GPS = 0;
     EKF = 1;
@@ -18,6 +21,7 @@ message Coordinate {
     double longitude = 2;
     double altitude = 3;
     Source source = 4;
+    google.protobuf.Timestamp timestamp = 5;
 }
 
 message PointsRequest {
@@ -31,13 +35,27 @@ message LogPositionRequest {
 
 message LogPositionReply {}
 
-message GetUsersRequest { }
-message GetUsersReply{
+message ListUsersRequest {}
+message ListUsersReply {
     repeated uint32 users_ids = 1;
 }
 
+message LengthRequest {
+    uint32 user_id = 1;
+}
+message LengthReply {
+    double length = 1;
+    uint32 num_points = 2;
+}
+
+message DeleteUserRequest {
+    uint32 user_id = 1;
+}
+
 service PositionLogService {
-    rpc GetUsers (GetUsersRequest) returns (GetUsersReply) { }
-    rpc LogPosition (LogPositionRequest) returns (LogPositionReply) { }
-    rpc GetPoints (PointsRequest) returns (stream Coordinate) { }
+    rpc ListUsers (ListUsersRequest) returns (ListUsersReply) {}
+    rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {}
+    rpc LogPosition (LogPositionRequest) returns (google.protobuf.Empty) {}
+    rpc GetPoints (PointsRequest) returns (stream Coordinate) {}
+    rpc GetTrackLength (LengthRequest) returns (LengthReply) {}
 }

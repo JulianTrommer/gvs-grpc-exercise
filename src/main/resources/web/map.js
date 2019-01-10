@@ -24,6 +24,7 @@ const fetchUsers = (userList) => {
                     } else {
                         // Add the track to the map
                         fetchData(map, userId);
+                        fetchTrackLength(userId);
                     }
                 };
                 userList.appendChild(item);
@@ -67,6 +68,14 @@ const fetchData = (map, userId) => {
             });
         })
         .catch(error => console.error("Could not fetch tracks for user", error));
+};
+
+const fetchTrackLength = (userId) => {
+    fetch("/trackLength/" + userId)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        })
 };
 
 /// Initialize the base map from Mapbox
