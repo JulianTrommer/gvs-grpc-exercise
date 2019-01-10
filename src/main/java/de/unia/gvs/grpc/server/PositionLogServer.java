@@ -6,6 +6,7 @@ import com.google.protobuf.Empty;
 import de.unia.gvs.grpc.*;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;
@@ -54,6 +55,11 @@ public class PositionLogServer {
 
         @Override
         public void deleteUser(DeleteUserRequest request, StreamObserver<Empty> responseObserver) {
+            if (!points.containsKey(request.getUserId())) {
+                responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+                return;
+            }
+
             points.removeAll(request.getUserId());
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
@@ -74,6 +80,11 @@ public class PositionLogServer {
 
         @Override
         public void getTrackLength(LengthRequest request, StreamObserver<LengthReply> responseObserver) {
+            if (!points.containsKey(request.getUserId())) {
+                responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+                return;
+            }
+
             final List<Coordinate> points = new ArrayList<>(this.points.get(request.getUserId()));
 
             double distance = 0;

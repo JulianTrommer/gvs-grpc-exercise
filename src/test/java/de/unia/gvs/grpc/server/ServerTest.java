@@ -4,6 +4,8 @@ import de.unia.gvs.grpc.*;
 import de.unia.gvs.grpc.PositionLogServiceGrpc.PositionLogServiceBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.testing.GrpcCleanupRule;
@@ -19,8 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
 public class ServerTest {
@@ -63,7 +64,12 @@ public class ServerTest {
 
     @Test
     public void serviceImpl_deleteUser_nonexisting() {
-        stub.deleteUser(DeleteUserRequest.newBuilder().setUserId(12345).build()); // should not produce error
+        try {
+            stub.deleteUser(DeleteUserRequest.newBuilder().setUserId(12345).build());
+            fail("Deleting a non-existing user should yield NOT_FOUND status");
+        } catch (StatusRuntimeException expected) {
+            assertEquals(Status.NOT_FOUND, expected.getStatus());
+        }
     }
 
     @Test
@@ -104,9 +110,12 @@ public class ServerTest {
         final LengthRequest request = LengthRequest.newBuilder()
                 .setUserId(12345)
                 .build();
-        final LengthReply reply = stub.getTrackLength(request);
-        assertEquals("Non-existent user should not contain any points", 0, reply.getNumPoints());
-        assertEquals("Non-existent user should have zero track length", 0d, reply.getLength(), 1e-9);
+        try {
+            final LengthReply reply = stub.getTrackLength(request);
+            fail("Fetching tracks for non-existing user should not yield NOT_FOUND status");
+        } catch (StatusRuntimeException expected) {
+            assertEquals(Status.NOT_FOUND, expected.getStatus());
+        }
     }
 
     @Test
