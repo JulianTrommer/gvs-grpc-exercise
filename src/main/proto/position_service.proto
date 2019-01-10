@@ -41,21 +41,35 @@ message ListUsersReply {
 }
 
 message LengthRequest {
+    // Required. ID of the user whose track whose track should be returned
     uint32 user_id = 1;
 }
 message LengthReply {
+    // Length of the track in meters
     double length = 1;
+
+    // Number of points in the track
     uint32 num_points = 2;
 }
 
 message DeleteUserRequest {
+    // Required. ID of the user to delete
     uint32 user_id = 1;
 }
 
 service PositionLogService {
+    // Returns a list of all users
     rpc ListUsers (ListUsersRequest) returns (ListUsersReply) {}
+
+    // Delete a single user
     rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {}
+
+    // Add points to a user's track, creating the user if necessary
     rpc LogPosition (LogPositionRequest) returns (google.protobuf.Empty) {}
+
+    // Return all points in a user's track
     rpc GetPoints (PointsRequest) returns (stream Coordinate) {}
+
+    // Return the overall track length of a user
     rpc GetTrackLength (LengthRequest) returns (LengthReply) {}
 }
