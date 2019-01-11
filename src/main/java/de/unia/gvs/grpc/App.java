@@ -14,7 +14,7 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.PredicateHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.JBossLoggingAccessLogReceiver;
-import io.undertow.server.handlers.resource.PathResourceManager;
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.util.Headers;
