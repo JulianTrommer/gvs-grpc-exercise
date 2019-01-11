@@ -60,3 +60,5 @@ sourceSets {
 application {
     mainClassName = 'de.unia.gvs.grpc.App'
 }
+
+// Hello World
